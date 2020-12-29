@@ -6,8 +6,9 @@ function love.load()
   dialogManager = Dialove.init({
     --font = love.graphics.newFont('fonts/comic-neue/ComicNeue-Bold.ttf', 20),
     --font = love.graphics.newFont('fonts/press-start-2p/PressStart2P-Regular.ttf', 16),
+    --font = love.graphics.newFont('fonts/seagram/Seagram tfb.ttf', 16),
     font = love.graphics.newFont('fonts/proggy-tiny/ProggyTiny.ttf', 16),
-    numberOfLines = 3,
+    --numberOfLines = 3,
     optionsSeparation = 10,
     viewportW = canvas:getWidth(),
     viewportH = canvas:getHeight(),
@@ -89,12 +90,10 @@ function love.update(dt)
 end
 
 function love.draw()
-  --love.graphics.draw(bg)
   love.graphics.setCanvas{canvas, stencil = true}
   love.graphics.clear()
   dialogManager:draw()
   love.graphics.setCanvas()
-
   love.graphics.draw(canvas, 0, 0, 0, love.graphics.getWidth() / canvas:getWidth(), love.graphics.getHeight() / canvas:getHeight())
 end
 

@@ -47,7 +47,12 @@ local dialove = {
     [';'] = 0.6,
     [','] = 0.35
   },
-  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static')
+  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static'),
+  backgroundTypes = {
+    normal = 1,
+    tiled = 2,
+    clamped = 3
+  }
 }
 dialove.__index = dialove
 
@@ -61,6 +66,8 @@ dialove.init = function (data)
   dialove.cornerRadius = data.cornerRadius or dialove.cornerRadius
   dialove.lineHeight = dialove.font:getHeight() * (data.lineSpacing or defaultLineSpacing)
   dialove.padding = data.padding or math.floor(dialove.font:getHeight())
+  dialove.verticalPadding = data.verticalPadding or dialove.padding
+  dialove.horizontalPadding = data.horizontalPadding or dialove.padding
   dialove.cornerRadius = data.cornerRadius or dialove.cornerRadius
   dialove.optionsSeparation = data.optionsSeparation or dialove.lineHeight
   dialove.defaultNumberOfLines = data.numberOfLines or dialove.defaultNumberOfLines
@@ -144,7 +151,7 @@ end
 
 function dialove:initBounds(dialog, optionsH)
   dialog.optionsH = optionsH
-  dialog.backgroundH = (dialog.linesH) + self.padding * 2 + dialog.optionsH
+  dialog.backgroundH = (dialog.linesH) + self.verticalPadding * 2 + dialog.optionsH
 
   if optionsH == 0 then
     dialog.backgroundH = dialog.backgroundH - (self.lineHeight - self.fontH)
@@ -152,7 +159,7 @@ function dialove:initBounds(dialog, optionsH)
 
   local heightToFitImage = 0
   if dialog.image then
-    heightToFitImage = dialog.image:getHeight() + self.padding * 2
+    heightToFitImage = dialog.image:getHeight() + self.verticalPadding * 2
     if heightToFitImage > dialog.backgroundH then
       dialog.backgroundH = heightToFitImage
     end
@@ -193,6 +200,12 @@ function dialove:push(data)
     newDialog.middle = (data.position == 'middle') -- has priority over 'top'
     newDialog.options = data.options
     newDialog.image = data.image
+    newDialog.background = data.background or {}
+    newDialog.background.type = newDialog.background.type or self.backgroundTypes.normal
+    newDialog.titleColor = data.titleColor or self.blue
+    newDialog.textColor = data.textColor or self.white
+    newDialog.selectedOptionColor = data.selectedOptionColor or self.blue
+    newDialog.unselectedOptionColor = data.unselectedOptionColor or self.gray
 
     if newDialog.options and not (type(newDialog.options) == 'table') then
       error('options value must be a list of strings')
@@ -209,9 +222,9 @@ function dialove:push(data)
 
   local indexWord = 1
 
-  newDialog.noPaddingWidth = self.viewportW - (self.padding * 2 + self.margin * 2)
+  newDialog.noPaddingWidth = self.viewportW - (self.horizontalPadding * 2 + self.margin * 2)
   if newDialog.image then
-    newDialog.noPaddingWidth = newDialog.noPaddingWidth - (newDialog.image:getWidth() + self.padding)
+    newDialog.noPaddingWidth = newDialog.noPaddingWidth - (newDialog.image:getWidth() + self.horizontalPadding)
   end
 
   -- this is the magic
@@ -247,12 +260,27 @@ function dialove:push(data)
   end
 
   newDialog.linesH = numberOfLines * self.lineHeight
+
   local optionsH = self:initOptions(newDialog)
   self:initBounds(newDialog, optionsH)
 
   if not self:getActiveDialogList() then
     self:setActiveDialogList({})
   end
+
+  -- extra props
+  newDialog.quadWidth = (self.viewportW - self.margin * 2) / 2
+  newDialog.quadHeight = (newDialog.height - self.verticalPadding * 2) / 2
+  newDialog.backgroundQuad = love.graphics.newQuad(0, 0,
+    math.floor(newDialog.quadWidth + 10),
+    math.floor(newDialog.quadHeight + 10),
+    (function()
+      return (newDialog.background and newDialog.background.image and newDialog.background.image:getWidth()) or 0
+    end)(),
+    (function()
+      return (newDialog.background and newDialog.background.image and newDialog.background.image:getHeight()) or 0
+    end)()
+  )
 
   table.insert(self:getActiveDialogList(), newDialog)
 end

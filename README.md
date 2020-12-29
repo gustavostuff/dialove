@@ -1,7 +1,7 @@
 ## Dialove, Dialog library for LÖVE
 
 [![License](http://img.shields.io/:license-MIT-blue.svg)](https://github.com/tavuntu/dialove/blob/main/LICENSE.md)
-[![Version](http://img.shields.io/:beta-0.0.2-green.svg)](https://github.com/tavuntu/dialove)
+[![Version](http://img.shields.io/:beta-0.0.3-green.svg)](https://github.com/tavuntu/dialove)
 
 ## Usage
 
@@ -57,7 +57,9 @@ end
 
 ## Screenshots
 
-[![Screen-Shot-2020-12-28-at-9-30-26-PM.png](https://i.postimg.cc/FHgXncym/Screen-Shot-2020-12-28-at-9-30-26-PM.png)](https://postimg.cc/CR12RRr6)
+Some of these require custom parameters in ```Dialove.init()```
+
+[![Screen-Shot-2020-12-29-at-12-56-11-PM.png](https://i.postimg.cc/Mp84rChg/Screen-Shot-2020-12-29-at-12-56-11-PM.png)](https://postimg.cc/GHqq453j)
 
 Code:
 
@@ -65,7 +67,7 @@ Code:
 dialogManager:show(randomText())
 ```
 
-[![Screen-Shot-2020-12-28-at-9-30-38-PM.png](https://i.postimg.cc/kM050Qbt/Screen-Shot-2020-12-28-at-9-30-38-PM.png)](https://postimg.cc/6ThwRGz9)
+[![Screen-Shot-2020-12-29-at-12-57-04-PM.png](https://i.postimg.cc/4dnF9s9H/Screen-Shot-2020-12-29-at-12-57-04-PM.png)](https://postimg.cc/62J0sszB)
 
 Code:
 
@@ -73,7 +75,7 @@ Code:
 dialogManager:show({text = randomText(), title = 'The title'})
 ```
 
-[![Screen-Shot-2020-12-28-at-9-30-50-PM.png](https://i.postimg.cc/DwFwZ75v/Screen-Shot-2020-12-28-at-9-30-50-PM.png)](https://postimg.cc/4mLg2krq)
+[![Screen-Shot-2020-12-29-at-12-57-21-PM.png](https://i.postimg.cc/KjMq0fQZ/Screen-Shot-2020-12-29-at-12-57-21-PM.png)](https://postimg.cc/hQK1j9Hw)
 
 Code:
 
@@ -89,7 +91,7 @@ dialogManager:show({
 })
 ```
 
-[![Screen-Shot-2020-12-28-at-9-31-04-PM.png](https://i.postimg.cc/fLdGm9T6/Screen-Shot-2020-12-28-at-9-31-04-PM.png)](https://postimg.cc/ZBTsh0Nc)
+[![Screen-Shot-2020-12-29-at-12-59-46-PM.png](https://i.postimg.cc/Zq5wG4js/Screen-Shot-2020-12-29-at-12-59-46-PM.png)](https://postimg.cc/Mng0RkC1)
 
 Code:
 
@@ -103,6 +105,49 @@ dialogManager:show({
   },
   image = love.graphics.newImage('face.png'),
   position = 'middle'
+})
+```
+
+[![Screen-Shot-2020-12-29-at-1-12-39-PM.png](https://i.postimg.cc/LXsG3jrX/Screen-Shot-2020-12-29-at-1-12-39-PM.png)](https://postimg.cc/MchsWfZ2)
+
+Code:
+
+```lua
+dialogManager:show({
+  text = randomText(),
+  textColor = {1, 1, 1},
+  background = {
+    color = {1, 0.5, 0}
+  }
+})
+```
+
+[![Screen-Shot-2020-12-29-at-1-03-46-PM.png](https://i.postimg.cc/bv594bZd/Screen-Shot-2020-12-29-at-1-03-46-PM.png)](https://postimg.cc/VSjtCJBc)
+
+Code:
+
+```lua
+dialogManager:show({
+  text = 'The king is requesting your presence at the palace.',
+  textColor = {0.261, 0.152, 0.017},
+  background = {
+    image = love.graphics.newImage('old-paper.png')
+  },
+  position = 'middle'
+})
+```
+
+[![Screen-Shot-2020-12-29-at-2-23-33-PM.png](https://i.postimg.cc/sxmGSQZ3/Screen-Shot-2020-12-29-at-2-23-33-PM.png)](https://postimg.cc/dZ70c0Bf)
+
+Code:
+
+```lua
+dialogManager:show({
+  text = randomText(),
+  background = {
+    image = love.graphics.newImage('corner.png'),
+    type = Dialove.backgroundTypes.clamped
+  }
 })
 ```
 
@@ -176,12 +221,16 @@ dialogManager:push({text = 'Dialog 8', options = {
     * Will normally be your canvas height
   * ```margin```: number
     * Space between the screen edge and the dialog background
+  * ```padding```: number
+    * Space between text and the edge of the dialog background
+  * ```verticalPadding```: number
+    * Top and bottom paddings
+  * ```horizontalPadding```: number
+    * Left and right paddings
   * ```cornerRadius```: number
     * The radius of corners for color/texture backgrounds
   * ```lineSpacing```: number
     * Defaults to 1.4
-  * ```padding```: number
-    * Space between text and the edge of the dialog background
   * ```optionsSeparation```: number
     * Force the space between the last line of text and the options (pixels)
   * ```defaultNumberOfLines```: number
@@ -199,6 +248,22 @@ dialogManager:push({text = 'Dialog 8', options = {
     * The content of the dialog that will be spelled
   * ```title```: string
     * Usually the character name
+  * ```background```: table
+    * May contain the following properties:
+      * ```color```: table
+      * ```image```: LÖVE [Image](https://love2d.org/wiki/Image)
+      * ```type```: string
+        * Dialove.backgroundTypes.normal (default)
+        * Dialove.backgroundTypes.tiled (not yet implemented)
+        * Dialove.backgroundTypes.clamped
+  * ```titleColor```: table
+    * Color for the title text, if any
+  * ```textColor```: table
+    * Color for the content text
+  * ```selectedOptionColor```: table
+    * Color for the selected option text
+  * ```unselectedOptionColor```: table
+    * Color for the unselected option text
   * ```numberOfLines```: number
     * Same as in ```defaultNumberOfLines``` in ```Dialog.init()```, just at dialog level
   * ```autoHeight```: boolean
@@ -214,12 +279,3 @@ dialogManager:push({text = 'Dialog 8', options = {
 ---
 
 **Please note: Dialove is still a WIP**
-
-Features pending:
-
-* Background colors
-* Background textures
-* Other things to make this more flexible
-
-
-Anime girl face courtesy of [Annie Mei Project](https://www.pinterest.com.mx/SherGwang/annie-mei-project/)

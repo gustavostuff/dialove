@@ -36,7 +36,7 @@ local normalBackgroundStencil = function (manager, dialog)
       love.graphics.rectangle('fill',
         math.floor(manager.margin),
         math.floor(titleBackgroundY),
-        math.floor(manager.font:getWidth(dialog.title) + manager.padding * 2),
+        math.floor(manager.font:getWidth(dialog.title) + manager.horizontalPadding * 2),
         math.floor(manager.lineHeight * 2),
         manager.cornerRadius,
         manager.cornerRadius
@@ -46,13 +46,44 @@ local normalBackgroundStencil = function (manager, dialog)
 end
 
 utils.drawBackground = function (manager, dialog)
-  love.graphics.stencil(normalBackgroundStencil(manager, dialog), "replace", 1)
-  love.graphics.setStencilTest("greater", 0)
+  if dialog.background and dialog.background.image then
+    love.graphics.setColor(dialog.background.color or colors.white)
 
-  love.graphics.setColor(manager.bgColor)
-  love.graphics.rectangle('fill', 0, 0, manager.viewportW, manager.viewportH)
+    if dialog.background.type == manager.backgroundTypes.normal then
+      love.graphics.draw(dialog.background.image, 0, math.floor(dialog.y))
+    elseif dialog.background.type == manager.backgroundTypes.tiled then
+      
+    elseif dialog.background.type == manager.backgroundTypes.clamped then
+      love.graphics.draw(
+        dialog.background.image,
+        dialog.backgroundQuad,
+        math.floor(manager.margin),
+        math.floor(dialog.y + manager.margin))
+      love.graphics.draw(
+        dialog.background.image,
+        dialog.backgroundQuad,
+        math.floor(manager.margin + dialog.quadWidth * 2),
+        math.floor(dialog.y + manager.margin + dialog.quadHeight * 2), 0, -1)
+      love.graphics.draw(
+        dialog.background.image,
+        dialog.backgroundQuad,
+        math.floor(manager.margin),
+        math.floor(dialog.y + manager.margin + dialog.quadHeight * 2), 0, 1, -1)
+      love.graphics.draw(
+        dialog.background.image,
+        dialog.backgroundQuad,
+        math.floor(manager.margin + dialog.quadWidth * 2),
+        math.floor(dialog.y + manager.margin), 0, -1, 1)
+    end
+  else
+    love.graphics.stencil(normalBackgroundStencil(manager, dialog), "replace", 1)
+    love.graphics.setStencilTest("greater", 0)
 
-  love.graphics.setStencilTest()
+    love.graphics.setColor((dialog.background and dialog.background.color) or manager.bgColor)
+    love.graphics.rectangle('fill', 0, 0, manager.viewportW, manager.viewportH)
+
+    love.graphics.setStencilTest()
+  end
 
   if manager.debug then
     love.graphics.setColor(colors.orange)
@@ -74,7 +105,7 @@ utils.drawBackground = function (manager, dialog)
       love.graphics.rectangle('line',
         math.floor(manager.margin),
         math.floor(titleBackgroundY),
-        math.floor(manager.font:getWidth(dialog.title) + manager.padding * 2),
+        math.floor(manager.font:getWidth(dialog.title) + manager.horizontalPadding * 2),
         math.floor(manager.lineHeight * 2)
       )
     end
@@ -92,23 +123,23 @@ utils.printTitle = function (manager, dialog)
     titleY = titleY - (manager.font:getHeight() / 4)
   end
 
-  love.graphics.print(dialog.title, math.floor(manager.margin + manager.padding), math.floor(titleY))
+  love.graphics.print(dialog.title, math.floor(manager.margin + manager.horizontalPadding), math.floor(titleY))
 end
 
 utils.printText = function (manager, dialog, firstLine, lastLine, completeLine)
   local lineY = 0
   for n = firstLine, lastLine do
     local line = dialog.lines[n]
-    local lineX = math.floor(manager.margin + manager.padding)
+    local lineX = math.floor(manager.margin + manager.horizontalPadding)
 
     if dialog.image then
-      lineX = lineX + dialog.image:getWidth() + manager.padding
+      lineX = lineX + dialog.image:getWidth() + manager.horizontalPadding
     end
 
     if not line then goto continue end
-    lineY = dialog.y + manager.margin + manager.padding
+    lineY = dialog.y + manager.margin + manager.verticalPadding
 
-    love.graphics.setColor(manager.fgColor)
+    love.graphics.setColor(dialog.textColor or manager.fgColor)
     love.graphics.print(line:sub(1, (function ()
       if completeLine then
         return #line
@@ -139,24 +170,24 @@ utils.drawImage = function (manager, dialog)
 
   love.graphics.setColor(colors.white)
   love.graphics.draw(dialog.image,
-    manager.margin + manager.padding,
-    dialog.y + manager.margin + manager.padding
+    manager.margin + manager.horizontalPadding,
+    dialog.y + manager.margin + manager.verticalPadding
   )
 end
 
 utils.printOptions = function (manager, dialog)
-  local lineX = math.floor(manager.margin + manager.padding)
+  local lineX = math.floor(manager.margin + manager.horizontalPadding)
   if dialog.image then
-    lineX = lineX + dialog.image:getWidth() + manager.padding
+    lineX = lineX + dialog.image:getWidth() + manager.horizontalPadding
   end
   if dialog.options and (#dialog.optionLabels > 0) then
-    local optionsY = dialog.y + dialog.height - manager.margin - manager.padding - dialog.optionsH
+    local optionsY = dialog.y + dialog.height - manager.margin - manager.verticalPadding - dialog.optionsH
     for m = 1, #dialog.optionLabels do
       local label = dialog.optionLabels[m]
 
-      love.graphics.setColor(colors.gray)
+      love.graphics.setColor(dialog.unselectedOptionColor or colors.gray)
       if label == dialog.selectedOption then
-        love.graphics.setColor(colors.blue)
+        love.graphics.setColor(dialog.selectedOptionColor or colors.blue)
       end
 
       love.graphics.print(label, lineX, math.floor(optionsY + (m - 1) * manager.lineHeight) + manager.optionsSeparation)
