@@ -24,7 +24,6 @@ function love.load()
   dialogManager:show('Dialog content')
   dialogManager:push('Dialog content')
   dialogManager:push('Dialog content')
-
 end
 
 function love.update(dt)
