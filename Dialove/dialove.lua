@@ -69,7 +69,10 @@ local colors = {
   alphaBlack = {0, 0, 0, 0.7},
   white = {1, 1, 1},
   gray = {0.5, 0.5, 0.5},
-  green = {0, 1, 0}
+  green = {0, 1, 0},
+  red = {1, 0, 0},
+  yellow = {1, 1, 0},
+  orange = {1, 0.5, 0},
 }
 
 -- for all cases, manager has global stuff, dialog has data just for the current one
@@ -112,6 +115,32 @@ local drawBackground = function (manager, dialog)
   love.graphics.rectangle('fill', 0, 0, manager.viewportW, manager.viewportH)
 
   love.graphics.setStencilTest()
+
+  if manager.debug then
+    love.graphics.setColor(colors.orange)
+    love.graphics.rectangle('line', 0, dialog.y, manager.viewportW, dialog.height)
+    love.graphics.setColor(colors.yellow)
+    love.graphics.rectangle('line',
+      manager.margin,
+      dialog.y + manager.margin,
+      manager.viewportW - manager.margin * 2,
+      dialog.height - manager.margin * 2
+    )
+
+    if manager.debug and dialog.title then
+      local titleBackgroundY = dialog.y + manager.margin - (manager.lineHeight)
+      if dialog.top then
+        titleBackgroundY = dialog.y + dialog.height - manager.margin - manager.lineHeight
+      end
+
+      love.graphics.rectangle('line',
+        math.floor(manager.margin),
+        math.floor(titleBackgroundY),
+        math.floor(manager.font:getWidth(dialog.title) + manager.padding * 2),
+        math.floor(manager.lineHeight * 2)
+      )
+    end
+  end
 end
 
 local calculateLineY = function (manager, dialog)
@@ -157,6 +186,17 @@ local printText = function (manager, dialog, firstLine, lastLine, completeLine)
       lineX,
       math.floor(lineY + (n - 1) * manager.lineHeight)
     )
+
+    if manager.debug then
+      love.graphics.setColor(colors.red)
+      love.graphics.rectangle('line',
+        lineX,
+        math.floor(lineY + (n - 1) * manager.lineHeight),
+        math.floor(manager.font:getWidth(line)),
+        math.floor(manager.lineHeight)
+      )
+    end
+
     ::continue::
   end
 end
@@ -281,9 +321,6 @@ function dialove:changeOption(sense)
   if newIndex > #self:getActiveDialog().optionLabels then newIndex = 1 end
 
   self:setDialogOption(self:getActiveDialog(), newIndex)
-  if self.debug then
-    --print('self:getActiveDialog(activeDialogListIndex)')
-  end
 end
 
 function dialove:setDialogOption(dialog, index)
@@ -302,15 +339,9 @@ function dialove:initOptions(dialog)
   end
 
   dialog.executeAction = function (action)
-    if self.debug then
-      print('* Is about to execute action for dialog (' .. dialog.lines[1] .. '...)')
-    end
     self.activeDialogListIndex = self.activeDialogListIndex + 1
     self.activeDialog = nil
     action()
-    if self.debug then
-      print('* Action executed (' .. dialog.lines[1] .. '...)')
-    end
   end
 
   self:setDialogOption(dialog, 1)
@@ -395,13 +426,17 @@ function dialove:push(data)
     newDialog.noPaddingWidth = newDialog.noPaddingWidth - (newDialog.image:getWidth() + self.padding)
   end
 
+  -- this is the magic
   for _, word in ipairs(wordsToInsert) do
     local currentLineBkp = currentLine
     currentLine = currentLine .. word .. ' '
     lineWasInserted = false
 
     if self.font:getWidth(currentLineBkp .. word) >= newDialog.noPaddingWidth then
-      table.insert(newDialog.lines, currentLineBkp)
+      --[[
+        -1 removes the trailing space:
+      ]]
+      table.insert(newDialog.lines, currentLineBkp:sub(1, #currentLineBkp - 1))
       indexWord = indexWord + 1
       currentLine = word .. ' '
       currentLineBkp = ''
@@ -411,6 +446,10 @@ function dialove:push(data)
 
   -- just one line that doesn't fill the width
   if not lineWasInserted or indexWord < #wordsToInsert then
+    --[[
+      -1 removes the trailing space:
+    ]]
+    currentLine = currentLine:sub(1, #currentLine - 1)
     table.insert(newDialog.lines, currentLine)
   end
 
@@ -428,9 +467,6 @@ function dialove:push(data)
   end
 
   table.insert(self:getActiveDialogList(), newDialog)
-  if self.debug then
-    print('>>> PUSH (' .. tostring(newDialog.lines[1] .. '...)'))
-  end
 end
 
 function dialove:pop(forcePop)
@@ -454,9 +490,6 @@ function dialove:pop(forcePop)
     local dialogPopped = table.remove(self:getActiveDialogList(), 1)
     self:setActiveDialog(dialogPopped)
     timer.new('showNextCharacter', self.normalCharacterDelay)
-    if self.debug then
-      print('<<< POP (' .. dialogPopped.lines[1] .. '...)')
-    end
   else
     self:setActiveDialog(nil)
     repeat
@@ -469,10 +502,6 @@ function dialove:pop(forcePop)
     if self:getActiveDialogList() then
       local dialogPopped = table.remove(self:getActiveDialogList(), 1)
       self:setActiveDialog(dialogPopped)
-    end
-
-    if self.debug then
-      print('no more dialogs in list ' .. self.activeDialogListIndex)
     end
   end
 end
@@ -533,6 +562,7 @@ end
 function dialove:draw()
   love.graphics.push('all')
   love.graphics.setFont(self.font)
+  love.graphics.setLineWidth(1)
   love.graphics.setLineStyle('smooth')
 
   local dialog = self:getActiveDialog()
@@ -552,21 +582,6 @@ function dialove:draw()
   if dialog.done then
     printOptions(self, dialog)
   end
-
-  if self.debug then
-    love.graphics.setColor(colors.white)
-    love.graphics.print('stackIndex:' .. self.activeDialogListIndex .. '\n------------------', 0, 0)
-    local debugY = 200
-    for i, list in ipairs(self.activeDialogListMap) do
-      local dialogsFirstLines = ''
-      for j, dialog in ipairs(list) do
-        dialogsFirstLines = dialogsFirstLines .. '[' .. dialog.lines[1] .. '], '
-      end
-      love.graphics.print('Number of dialogs at stack index ' .. i .. ': ' .. dialogsFirstLines, 0, debugY)
-      debugY = debugY - self.font:getHeight()
-    end
-  end
-
   love.graphics.pop()
 end
 

@@ -7,12 +7,13 @@ function love.load()
     --font = love.graphics.newFont('fonts/comic-neue/ComicNeue-Bold.ttf', 20),
     --font = love.graphics.newFont('fonts/press-start-2p/PressStart2P-Regular.ttf', 16),
     font = love.graphics.newFont('fonts/proggy-tiny/ProggyTiny.ttf', 16),
-    --cornerRadius = 0,
-    numberOfLines = 3,
+    numberOfLines = 4,
     optionsSeparation = 10,
     viewportW = canvas:getWidth(),
     viewportH = canvas:getHeight(),
   })
+
+  -- dialogManager:setDebug(true)
 
   local function randomText()
     local texts = {
