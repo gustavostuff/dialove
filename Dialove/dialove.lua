@@ -17,10 +17,6 @@
   OR OTHER DEALINGS IN THE SOFTWARE.
 ]]
 
-
--- Utilities
--- ############################################################
-
 local BASE = (...):sub(1, #(...) - 7) .. '/'
 
 local timer = require(BASE .. 'timer')
@@ -51,7 +47,6 @@ local dialove = {
     [';'] = 0.6,
     [','] = 0.35
   },
-  -- ugly hack, I need help on this:
   typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static')
 }
 dialove.__index = dialove
