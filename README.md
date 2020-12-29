@@ -172,36 +172,36 @@ dialogManager:push({text = 'Dialog 8', options = {
   * ```font```: LÖVE [Font](https://love2d.org/wiki/Font)
     * The font to use
   * ```viewportW```: number
-    * will normally be your canvas width
+    * Will normally be your canvas width
   * ```viewportH```: number
-    * will normally be your canvas height
+    * Will normally be your canvas height
   * ```margin```: number
-    * space between the screen edge and the dialog background
+    * Space between the screen edge and the dialog background
   * ```cornerRadius```: number
-    * the radius of corners for color/texture backgrounds
+    * The radius of corners for color/texture backgrounds
   * ```lineSpacing```: number
-    * defaults to 1.4
+    * Defaults to 1.4
   * ```padding```: number
     * Space between text and the edge of the dialog background
   * ```optionsSeparation```: number
     * Force the space between the last line of text and the options (pixels)
   * ```defaultNumberOfLines```: number
-    * number of lines used for all dialogs (not inclusing the line(s) for the options)
+    * Number of lines used for all dialogs (not including the line(s) for the options)
   * ```typingSound```: LÖVE [Source](https://love2d.org/wiki/Source)
     * Typing sound (ignored for spaces)
 </details>
 
 <details>
-  <summary>dialogManager.dialog([text|table])</summary>
+  <summary>dialogManager.[push|show]([text|table])</summary>
   
   ```table``` supports the properties:
 
   * ```text```: string
-    * the content of the dialog
+    * The content of the dialog that will be spelled
   * ```title```: string
-    * usually the character name
+    * Usually the character name
   * ```numberOfLines```: number
-    * same as in ```defaultNumberOfLines``` in ```Dialog.init()```, just at dialog level
+    * Same as in ```defaultNumberOfLines``` in ```Dialog.init()```, just at dialog level
   * ```autoHeight```: boolean
     * When true, the dialog height will fit all the text and or the image
   * ```position```: string
@@ -209,7 +209,7 @@ dialogManager:push({text = 'Dialog 8', options = {
   * ```options```: table
     * A list of tables where each one is a string at index 1 and a function at index 2, as shown in the examples
   * ```image```: LÖVE [Image](https://love2d.org/wiki/Image)
-    * usually the character face
+    * Usually the character face
 </details>
 
 ---
