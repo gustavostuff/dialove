@@ -109,7 +109,7 @@ dialogManager:show({
 
 Dialove supports a Tree/List like structure for dialog flows. Consider this:
 
-[![dialove-flow.png](https://i.postimg.cc/XJ8FDZpP/dialove-flow.png)](https://postimg.cc/ygDkD8hh)
+[![dialove-flow-3.png](https://i.postimg.cc/J7Yrb9m8/dialove-flow-3.png)](https://postimg.cc/8sWgGXjX)
 
 This may be specially useful for RPG games or any game where the story can have a lot of different paths. The code equivalent would be something like:
 
