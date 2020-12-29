@@ -249,7 +249,7 @@ local dialove = {
   viewportH = love.graphics.getHeight(),
   debug = false,
   speedFactor = 1,
-  normalCharacterDelay = 0.05,
+  normalCharacterDelay = 0.03,
   delayPerCharacerMap = {
     ['.'] = 0.6,
     ['?'] = 0.6,
@@ -507,7 +507,7 @@ function dialove:pop(forcePop)
 end
 
 function dialove:playTypingSound(currentChar, dialog)
-  if currentChar ~= ' ' and dialog.lineIndex <= #dialog.lines then
+  if (not self.delayPerCharacerMap[currentChar]) and (dialog.lineIndex <= #dialog.lines) then
     love.audio.play(self.typingSound)
   end
 end

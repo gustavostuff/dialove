@@ -31,7 +31,7 @@ function love.load()
 
   dialogManager:show({
     title = 'Title Dialog 1',
-    text = 'Dialog 1: Press F to complete the dialog, Space bar to speed up and Enter to request the next one.',
+    text = 'Abc.',
     options = {
     {
       'Choose Dialog 2', function ()

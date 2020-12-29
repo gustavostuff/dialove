@@ -187,7 +187,7 @@ dialogManager:push({text = 'Dialog 8', options = {
   * ```defaultNumberOfLines```: number
     * Number of lines used for all dialogs (not including the line(s) for the options)
   * ```typingSound```: LÖVE [Source](https://love2d.org/wiki/Source)
-    * Typing sound (ignored for spaces)
+    * Typing sound, ignored for punctuation (. , ; : ? !)
 </details>
 
 <details>
