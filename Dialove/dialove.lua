@@ -21,217 +21,10 @@
 -- Utilities
 -- ############################################################
 
-local timer = {
-  list = {}
-}
+local BASE = (...):sub(1, #(...) - 7) .. '/'
 
-timer.new = function (key, delay)
-  timer.list[key] = {
-    delay = delay,
-    timerCount = 0,
-    enabled = true
-  }
-end
-
-timer.isTimeTo = function (key, dt)
-  local t = timer.list[key]
-
-  if not t or not t.enabled then
-    return false
-  end
-
-  t.timerCount = t.timerCount + dt
-
-  if t.timerCount >= t.delay then
-    t.timerCount = 0
-    t.enabled = false
-    return true
-  end
-end
-
-timer.completeIteration = function (key)
-  local t = timer.list[key]
-
-  if t then
-    t.timerCount = t.delay
-  end
-end
-
-timer.setDelay = function (key, delay)
-  local t = timer.list[key]
-
-  if t then
-    t.delay = delay
-  end
-end
-
-local colors = {
-  alphaBlack = {0, 0, 0, 0.7},
-  white = {1, 1, 1},
-  gray = {0.5, 0.5, 0.5},
-  green = {0, 1, 0},
-  red = {1, 0, 0},
-  yellow = {1, 1, 0},
-  orange = {1, 0.5, 0},
-}
-
--- for all cases, manager has global stuff, dialog has data just for the current one
-local normalBackgroundStencil = function (manager, dialog)
-  return function ()
-    love.graphics.setColor(colors.white)
-    love.graphics.rectangle('fill',
-      math.floor(manager.margin),
-      math.floor(dialog.y + manager.margin),
-      math.floor(manager.viewportW - manager.margin * 2),
-      math.floor(dialog.backgroundH),
-      manager.cornerRadius,
-      manager.cornerRadius
-    )
-
-    if dialog.title then
-      local titleBackgroundY = dialog.y + manager.margin - (manager.lineHeight)
-
-      if dialog.top then
-        titleBackgroundY = dialog.y + dialog.height - manager.margin - manager.lineHeight
-      end
-
-      love.graphics.rectangle('fill',
-        math.floor(manager.margin),
-        math.floor(titleBackgroundY),
-        math.floor(manager.font:getWidth(dialog.title) + manager.padding * 2),
-        math.floor(manager.lineHeight * 2),
-        manager.cornerRadius,
-        manager.cornerRadius
-      )
-    end
-  end
-end
-
-local drawBackground = function (manager, dialog)
-  love.graphics.stencil(normalBackgroundStencil(manager, dialog), "replace", 1)
-  love.graphics.setStencilTest("greater", 0)
-
-  love.graphics.setColor(manager.bgColor)
-  love.graphics.rectangle('fill', 0, 0, manager.viewportW, manager.viewportH)
-
-  love.graphics.setStencilTest()
-
-  if manager.debug then
-    love.graphics.setColor(colors.orange)
-    love.graphics.rectangle('line', 0, dialog.y, manager.viewportW, dialog.height)
-    love.graphics.setColor(colors.yellow)
-    love.graphics.rectangle('line',
-      manager.margin,
-      dialog.y + manager.margin,
-      manager.viewportW - manager.margin * 2,
-      dialog.height - manager.margin * 2
-    )
-
-    if manager.debug and dialog.title then
-      local titleBackgroundY = dialog.y + manager.margin - (manager.lineHeight)
-      if dialog.top then
-        titleBackgroundY = dialog.y + dialog.height - manager.margin - manager.lineHeight
-      end
-
-      love.graphics.rectangle('line',
-        math.floor(manager.margin),
-        math.floor(titleBackgroundY),
-        math.floor(manager.font:getWidth(dialog.title) + manager.padding * 2),
-        math.floor(manager.lineHeight * 2)
-      )
-    end
-  end
-end
-
-local calculateLineY = function (manager, dialog)
-  local lineY = dialog.y + manager.margin + manager.padding
-  return lineY
-end
-
-local printTitle = function (manager, dialog)
-  if not dialog.title then return end
-
-  love.graphics.setColor(manager.fgColor)
-  local titleY = dialog.y + manager.margin - manager.lineHeight / 2
-  if dialog.top then
-    titleY = dialog.y + dialog.height - manager.margin
-  else
-    titleY = titleY - (manager.font:getHeight() / 4)
-  end
-
-  love.graphics.print(dialog.title, math.floor(manager.margin + manager.padding), math.floor(titleY))
-end
-
-local printText = function (manager, dialog, firstLine, lastLine, completeLine)
-  local lineY = 0
-  for n = firstLine, lastLine do
-    local line = dialog.lines[n]
-    local lineX = math.floor(manager.margin + manager.padding)
-
-    if dialog.image then
-      lineX = lineX + dialog.image:getWidth() + manager.padding
-    end
-
-    if not line then goto continue end
-    lineY = calculateLineY(manager, dialog)
-
-    love.graphics.setColor(manager.fgColor)
-    love.graphics.print(line:sub(1, (function ()
-      if completeLine then
-        return #line
-      else
-        return dialog.characterIndex
-      end
-    end)()),
-      lineX,
-      math.floor(lineY + (n - 1) * manager.lineHeight)
-    )
-
-    if manager.debug then
-      love.graphics.setColor(colors.red)
-      love.graphics.rectangle('line',
-        lineX,
-        math.floor(lineY + (n - 1) * manager.lineHeight),
-        math.floor(manager.font:getWidth(line)),
-        math.floor(manager.lineHeight)
-      )
-    end
-
-    ::continue::
-  end
-end
-
-local function drawImage(manager, dialog)
-  if not dialog.image then return end
-
-  love.graphics.setColor(colors.white)
-  love.graphics.draw(dialog.image,
-    manager.margin + manager.padding,
-    dialog.y + manager.margin + manager.padding
-  )
-end
-
-local printOptions = function (manager, dialog)
-  local lineX = math.floor(manager.margin + manager.padding)
-  if dialog.image then
-    lineX = lineX + dialog.image:getWidth() + manager.padding
-  end
-  if dialog.options and (#dialog.optionLabels > 0) then
-    local optionsY = dialog.y + dialog.height - manager.margin - manager.padding - dialog.optionsH
-    for m = 1, #dialog.optionLabels do
-      local label = dialog.optionLabels[m]
-
-      love.graphics.setColor(colors.gray)
-      if label == dialog.selectedOption then
-        love.graphics.setColor(colors.green)
-      end
-
-      love.graphics.print(label, lineX, math.floor(optionsY + (m - 1) * manager.lineHeight) + manager.optionsSeparation)
-    end
-  end
-end
-
--- ############################################################
+local timer = require(BASE .. 'timer')
+local utils = require(BASE .. 'drawing-utils')
 
 local defaultFont = love.graphics.newFont()
 defaultFont = love.graphics.newFont(defaultFont:getBaseline() * 1.5)
@@ -241,10 +34,10 @@ local dialove = {
   activeDialogListIndex = 1,
   activeDialogListMap = {},
   defaultNumberOfLines = 4,
-  bgColor = colors.alphaBlack,
-  fgColor = colors.white,
+  bgColor = utils.colors.alphaBlack,
+  fgColor = utils.colors.white,
   margin = 8,
-  cornerRadius = 7,
+  cornerRadius = 2,
   viewportW = love.graphics.getWidth(),
   viewportH = love.graphics.getHeight(),
   debug = false,
@@ -259,7 +52,7 @@ local dialove = {
     [','] = 0.35
   },
   -- ugly hack, I need help on this:
-  typingSound = love.audio.newSource((...):sub(1, #(...) - 7) .. '/assets/typing-sound.ogg', 'static')
+  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static')
 }
 dialove.__index = dialove
 
@@ -347,7 +140,7 @@ function dialove:initOptions(dialog)
   self:setDialogOption(dialog, 1)
 
   if dialog.options and (#dialog.optionLabels > 0) then
-    optionsH = (#dialog.optionLabels - 1) * self.lineHeight + self.font:getHeight() + self.optionsSeparation
+    optionsH = (#dialog.optionLabels - 1) * self.lineHeight + self.fontH + self.optionsSeparation
     dialog.needsInput = true
   end
 
@@ -359,7 +152,7 @@ function dialove:initBounds(dialog, optionsH)
   dialog.backgroundH = (dialog.linesH) + self.padding * 2 + dialog.optionsH
 
   if optionsH == 0 then
-    dialog.backgroundH = dialog.backgroundH - (self.lineHeight - self.font:getHeight())
+    dialog.backgroundH = dialog.backgroundH - (self.lineHeight - self.fontH)
   end
 
   local heightToFitImage = 0
@@ -562,7 +355,7 @@ end
 function dialove:draw()
   love.graphics.push('all')
   love.graphics.setFont(self.font)
-  love.graphics.setLineWidth(1)
+  love.graphics.setLineWidth(2)
   love.graphics.setLineStyle('smooth')
 
   local dialog = self:getActiveDialog()
@@ -571,16 +364,16 @@ function dialove:draw()
     return
   end
 
-  drawBackground(self, dialog)
+  utils.drawBackground(self, dialog)
 
-  printTitle(self, dialog)
+  utils.printTitle(self, dialog)
   -- lines already spelled:
-  printText(self, dialog, 1, dialog.lineIndex - 1, true)
+  utils.printText(self, dialog, 1, dialog.lineIndex - 1, true)
   -- line currently being spelled::
-  printText(self, dialog, dialog.lineIndex, dialog.lineIndex, false)
-  drawImage(self, dialog)
+  utils.printText(self, dialog, dialog.lineIndex, dialog.lineIndex, false)
+  utils.drawImage(self, dialog)
   if dialog.done then
-    printOptions(self, dialog)
+    utils.printOptions(self, dialog)
   end
   love.graphics.pop()
 end

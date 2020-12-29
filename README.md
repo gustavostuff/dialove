@@ -1,7 +1,7 @@
 ## Dialove, Dialog library for LÖVE
 
 [![License](http://img.shields.io/:license-MIT-blue.svg)](https://github.com/tavuntu/dialove/blob/main/LICENSE.md)
-[![Version](http://img.shields.io/:beta-0.0.1-green.svg)](https://github.com/tavuntu/dialove)
+[![Version](http://img.shields.io/:beta-0.0.2-green.svg)](https://github.com/tavuntu/dialove)
 
 ## Usage
 
