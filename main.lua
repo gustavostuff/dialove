@@ -9,6 +9,7 @@ function love.load()
     --font = love.graphics.newFont('fonts/seagram/Seagram tfb.ttf', 16),
     font = love.graphics.newFont('fonts/proggy-tiny/ProggyTiny.ttf', 16),
     --numberOfLines = 3,
+    --typingVolume = 0.1,
     optionsSeparation = 10,
     viewportW = canvas:getWidth(),
     viewportH = canvas:getHeight(),
