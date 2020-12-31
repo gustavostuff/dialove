@@ -75,6 +75,7 @@ function love.load()
       'Choose Dialog 13', function ()
         dialogManager:show('Dialog 13: ' .. randomText())
         dialogManager:push({
+          title = 'Title',
           text = 'Dialog 14: ' .. randomText(),
           image = love.graphics.newImage('face.png')
         })

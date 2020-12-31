@@ -36,7 +36,7 @@ local normalBackgroundStencil = function (manager, dialog)
       love.graphics.rectangle('fill',
         math.floor(manager.margin),
         math.floor(titleBackgroundY),
-        math.floor(manager.font:getWidth(dialog.title) + manager.horizontalPadding * 2),
+        math.floor(manager.font:getWidth(dialog.title) + manager.horizontalPadding),
         math.floor(manager.lineHeight * 2),
         manager.cornerRadius,
         manager.cornerRadius
@@ -96,7 +96,7 @@ utils.drawBackground = function (manager, dialog)
       dialog.height - manager.margin * 2
     )
 
-    if manager.debug and dialog.title then
+    if dialog.title then
       local titleBackgroundY = dialog.y + manager.margin - manager.lineHeight
       if dialog.top then
         titleBackgroundY = dialog.y + dialog.height - manager.margin - manager.lineHeight
@@ -123,7 +123,9 @@ utils.printTitle = function (manager, dialog)
     titleY = titleY - (manager.font:getHeight() / 4)
   end
 
-  love.graphics.print(dialog.title, math.floor(manager.margin + manager.horizontalPadding), math.floor(titleY))
+  love.graphics.print(dialog.title,
+    math.floor(manager.margin + manager.horizontalPadding / 2),
+    math.floor(titleY))
 end
 
 utils.printText = function (manager, dialog, firstLine, lastLine, completeLine)

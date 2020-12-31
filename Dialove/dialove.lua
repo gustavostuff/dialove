@@ -20,7 +20,7 @@
 local BASE = (...):sub(1, #(...) - 7) .. '/'
 
 local timer = require(BASE .. 'timer')
-local utils = require(BASE .. 'drawing-utils')
+local utils = require(BASE .. 'dialove-utils')
 
 local defaultFont = love.graphics.newFont()
 defaultFont = love.graphics.newFont(defaultFont:getBaseline() * 1.5)

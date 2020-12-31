@@ -155,7 +155,7 @@ dialogManager:push({text = 'Dialog 8', options = {
     * Defaults to 1.4
   * ```optionsSeparation```: number
     * Force the space between the last line of text and the options (pixels)
-  * ```defaultNumberOfLines```: number
+  * ```numberOfLines```: number
     * Number of lines used for all dialogs (not including the line(s) for the options)
   * ```typingSound```: LÖVE [Source](https://love2d.org/wiki/Source)
     * Typing sound, ignored for punctuation (. , ; : ? !)
