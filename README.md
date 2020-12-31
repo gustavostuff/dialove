@@ -58,26 +58,81 @@ end
 ## Screenshots
 
 Some of these require custom parameters in ```Dialove.init()```
+```lua
+dialogManager:show(randomText())
+```
+[![Screen-Shot-2020-12-31-at-12-02-30-PM.png](https://i.postimg.cc/vH3XGn6Q/Screen-Shot-2020-12-31-at-12-02-30-PM.png)](https://postimg.cc/xcNLRcR7)
 
-[![Screen-Shot-2020-12-29-at-12-56-11-PM.png](https://i.postimg.cc/Mp84rChg/Screen-Shot-2020-12-29-at-12-56-11-PM.png)](https://postimg.cc/GHqq453j)
+---
+```lua
+dialogManager:show({text = randomText(), title = 'The title'})
+```
+[![Screen-Shot-2020-12-31-at-12-03-06-PM.png](https://i.postimg.cc/rm1C3Rk2/Screen-Shot-2020-12-31-at-12-03-06-PM.png)](https://postimg.cc/S2KMzsRg)
 
-[![Screen-Shot-2020-12-29-at-12-57-04-PM.png](https://i.postimg.cc/4dnF9s9H/Screen-Shot-2020-12-29-at-12-57-04-PM.png)](https://postimg.cc/62J0sszB)
+---
+```lua
+dialogManager:show({
+  text = randomText(),
+  title = 'The title',
+  options = {
+    {'Option 1', function () --[[ do stuff ]] end},
+    {'Option 2', function () --[[ do stuff ]] end},
+  }
+})
+```
+[![Screen-Shot-2020-12-31-at-12-07-34-PM.png](https://i.postimg.cc/BZCBCFpx/Screen-Shot-2020-12-31-at-12-07-34-PM.png)](https://postimg.cc/23VWkVP6)
 
-[![Screen-Shot-2020-12-29-at-12-57-21-PM.png](https://i.postimg.cc/KjMq0fQZ/Screen-Shot-2020-12-29-at-12-57-21-PM.png)](https://postimg.cc/hQK1j9Hw)
+---
+```lua
+dialogManager:show({
+  text = randomText(),
+  title = 'The title',
+  image = love.graphics.newImage('face.png')
+  options = {
+    {'Option 1', function () --[[ do stuff ]] end},
+    {'Option 2', function () --[[ do stuff ]] end},
+  }
+})
+```
+[![Screen-Shot-2020-12-31-at-12-07-58-PM.png](https://i.postimg.cc/jdg6prG2/Screen-Shot-2020-12-31-at-12-07-58-PM.png)](https://postimg.cc/kBStSLMP)
 
-[![Screen-Shot-2020-12-29-at-12-59-46-PM.png](https://i.postimg.cc/Zq5wG4js/Screen-Shot-2020-12-29-at-12-59-46-PM.png)](https://postimg.cc/Mng0RkC1)
+---
+```lua
+dialogManager:show({
+  text = randomText(),
+  background = {
+    image = love.graphics.newImage('old-paper.png')
+  }
+})
+```
+[![Screen-Shot-2020-12-31-at-12-44-14-PM.png](https://i.postimg.cc/pL3fdJVt/Screen-Shot-2020-12-31-at-12-44-14-PM.png)](https://postimg.cc/3kC4SpDL)
 
-[![Screen-Shot-2020-12-29-at-1-12-39-PM.png](https://i.postimg.cc/LXsG3jrX/Screen-Shot-2020-12-29-at-1-12-39-PM.png)](https://postimg.cc/MchsWfZ2)
-
-[![Screen-Shot-2020-12-29-at-1-03-46-PM.png](https://i.postimg.cc/bv594bZd/Screen-Shot-2020-12-29-at-1-03-46-PM.png)](https://postimg.cc/VSjtCJBc)
-
+---
+```lua
+dialogManager:show({
+  text = randomText(),
+  background = {
+    image = love.graphics.newImage('corner.png'),
+    type = Dialove.backgroundTypes.clamped
+  }
+})
+```
 [![Screen-Shot-2020-12-29-at-2-23-33-PM.png](https://i.postimg.cc/sxmGSQZ3/Screen-Shot-2020-12-29-at-2-23-33-PM.png)](https://postimg.cc/dZ70c0Bf)
 
 Dialove supports a Tree/List-like structure for dialog flows. Consider this:
 
-[![dialove-flow-3.png](https://i.postimg.cc/J7Yrb9m8/dialove-flow-3.png)](https://postimg.cc/8sWgGXjX)
+[![diagram.png](https://i.postimg.cc/5Ng11s36/diagram.png)](https://postimg.cc/8j7xmBxS)
 
-This may be specially useful for RPG games where the story can have a lot of different paths. For this example, the code would be something like:
+Dialogs 1, 3 and 8 will give you a choice, the rest will be shown in the given order. That said, these are the possible paths:
+
+* 1, 2, 4, 7, 8, 9, 10, 11, 12
+* 1, 3, 5, 7, 8, 9, 10, 11, 12
+* 1, 3, 6, 7, 8, 9, 10, 11, 12
+* 1, 2, 4, 7, 8, 13, 14
+* 1, 3, 5, 7, 8, 13, 14
+* 1, 3, 6, 7, 8, 13, 14
+
+This may be specially useful for RPG games where the story can have many of different paths. For this example, the code would be something like:
 
 ```lua
 dialogManager:show({text = 'Dialog 1', options = {
