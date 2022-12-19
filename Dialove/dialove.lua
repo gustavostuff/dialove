@@ -18,6 +18,11 @@
 ]]
 
 local BASE = (...):sub(1, #(...) - 7) .. '/'
+-- replace . with / for windows compatibility
+local BASE2 = BASE
+if 'Windows' == love._os then
+  BASE2 = BASE == './' and '' or BASE:gsub('%.', '/')
+end
 
 local timer = require(BASE .. 'timer')
 local utils = require(BASE .. 'dialove-utils')
@@ -47,7 +52,7 @@ local dialove = {
     [';'] = 0.5,
     [','] = 0.3
   },
-  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static'),
+  typingSound = love.audio.newSource(BASE2 .. 'assets/typing-sound.ogg', 'static'),
   backgroundTypes = {
     normal = 1,
     tiled = 2,
